@@ -104,7 +104,7 @@ CREATE TABLE public.execution_logs (
 -- ==========================================
 -- 3. DATOS INICIALES (SEMILLA)
 -- ==========================================
-INSERT INTO public.supported_assets (symbol, name, type) VALUES 
+INSERT INTO public.supported_assets (symbol, asset_name, asset_type) VALUES 
 ('USDC', 'USD Coin', 'STABLECOIN'),
 ('USDT', 'Tether', 'STABLECOIN'),
 ('USD1', 'USD1', 'STABLECOIN')
@@ -125,6 +125,7 @@ CREATE INDEX idx_execution_logs_user_id ON public.execution_logs(user_id);
 -- 5. ROW LEVEL SECURITY (RLS)
 -- ==========================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.supported_assets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_tracked_assets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.connections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.balances ENABLE ROW LEVEL SECURITY;
@@ -136,9 +137,15 @@ ALTER TABLE public.execution_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
+-- Políticas para el Catálogo Global (solo lectura para usuarios autenticados)
+CREATE POLICY "Authenticated users can read supported assets" ON public.supported_assets FOR SELECT TO authenticated USING (true);
+
 -- Políticas Genéricas para el resto de tablas transaccionales (CRUD básico amarrado al user_id)
 CREATE POLICY "Users can manage own tracked assets" ON public.user_tracked_assets FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Users can manage own connections" ON public.connections FOR ALL USING (auth.uid() = user_id);
+-- Connections: no UPDATE or DELETE policy on purpose. Deleting goes through the remove-connection Edge Function
+-- (so the Alchemy webhook stays in sync) and editing an address directly would desync it as well.
+CREATE POLICY "Users can view own connections" ON public.connections FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own connections" ON public.connections FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can view own balances" ON public.balances FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage own envelopes" ON public.envelopes FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage own rules" ON public.rules FOR ALL USING (auth.uid() = user_id);

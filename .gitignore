@@ -1,0 +1,58 @@
+.claude
+.vscode
+
+CLAUDE.md
+
+sprints
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Supabase CLI local state
+supabase/.branches
+supabase/.temp
+supabase/.env
+supabase/.env.*
+!supabase/.env.example
+supabase/functions/.env
+supabase/functions/.env.*
+!supabase/functions/.env.example
+
+# Supabase local seed/backup artifacts
+supabase/*.dump
+*.sql.backup
+
+# Deno
+.deno/
+deno.lock.bak
+/vendor/
+coverage/
+cov_profile/
+*.lcov
+
+# Node (if npm packages are used via npm: specifiers or tooling)
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
