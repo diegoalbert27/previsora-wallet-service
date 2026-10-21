@@ -36,7 +36,15 @@ serve(async (req) => {
       return new Response("Wallets no pertenecen a ningún usuario", { status: 200 });
     }
 
-    const allowedAssets = ['USDC', 'USDT', 'ETH']; // O puedes consultarlos de tu tabla supported_assets
+    const { data: assets, error: assetsError } = await adminClient
+      .from('supported_assets')
+      .select('symbol')
+      .eq('is_active', true)
+      .eq('delete_status', false);
+
+    if (assetsError) throw assetsError;
+
+    const allowedAssets = assets.map((a) => a.symbol);
     const syncedAt = new Date().toISOString();
     const rowsToUpsert: any[] = [];
 
@@ -55,7 +63,11 @@ serve(async (req) => {
     }
 
     if (rowsToUpsert.length > 0) {
-      await adminClient.from('balances').upsert(rowsToUpsert, { onConflict: 'connection_id,asset' });
+      const { error: upsertError } = await adminClient
+        .from('balances')
+        .upsert(rowsToUpsert, { onConflict: 'connection_id,asset' });
+
+      if (upsertError) throw upsertError;
     }
 
     return new Response(JSON.stringify({ success: true, updated_connections: connections.length }), {

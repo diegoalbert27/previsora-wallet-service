@@ -15,6 +15,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="envelopes"
+        options={{
+          title: 'Envelopes',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'mail' : 'mail-outline'} size={size} color={color as string} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="connections"
         options={{
           title: 'Connections',

@@ -19,7 +19,6 @@ function RootNavigator() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {/* "/" must always resolve; it redirects to the right group for the current state. */}
       <Stack.Screen name="index" />
       <Stack.Protected guard={!signedIn}>
         <Stack.Screen name="(auth)" />
@@ -27,6 +26,8 @@ function RootNavigator() {
       <Stack.Protected guard={signedIn}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="add-connection" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="add-envelope" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="manage-rules" options={{ presentation: 'modal' }} />
       </Stack.Protected>
     </Stack>
   );

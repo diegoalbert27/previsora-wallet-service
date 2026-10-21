@@ -43,3 +43,34 @@ export interface SyncResult {
   skipped: { connection_id: string; connection_type: string; provider: string; network: string | null }[];
   errors: { connection_id: string; error: string }[];
 }
+
+export interface Envelope {
+  id: string;
+  name: string;
+  target_amount: number | null;
+  current_amount: number;
+  asset: string;
+  created_at: string;
+}
+
+/** A row of the `envelope_balances` view: the share of the user's total liquidity assigned to an envelope. */
+export interface EnvelopeBalance {
+  envelope_id: string;
+  name: string;
+  /** Sum of the envelope's active rule percentages (0–100). */
+  percentage: number;
+  /** Total balances × percentage / 100, in USD. */
+  allocated_amount: number;
+  created_at: string;
+}
+
+/** Share of the user's liquidity routed to an envelope. */
+export interface RuleInput {
+  envelope_id: string;
+  percentage: number;
+}
+
+export interface NewEnvelopeInput {
+  name: string;
+  asset: string;
+}

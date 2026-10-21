@@ -88,7 +88,8 @@ CREATE TABLE public.rules (
     target_envelope_id UUID REFERENCES public.envelopes(id) ON DELETE CASCADE NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(target_envelope_id, trigger_event) -- una regla por sobre y tipo de disparador (permite upsert)
 );
 
 -- Historial de Ejecución de Reglas

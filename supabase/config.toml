@@ -417,7 +417,7 @@ enabled = true
 [functions.alchemy-webhook]
 enabled = true
 verify_jwt = false
-import_map = "./functions/alchemy-webhook/deno.json"
+# import_map = "./functions/alchemy-webhook/deno.json"  # not needed: the function uses URL imports
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
 entrypoint = "./functions/alchemy-webhook/index.ts"

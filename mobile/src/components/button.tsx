@@ -5,16 +5,22 @@ interface ButtonProps {
   title: string;
   onPress: () => void;
   loading?: boolean;
+  disabled?: boolean;
   variant?: 'primary' | 'secondary';
 }
 
-export function Button({ title, onPress, loading, variant = 'primary' }: ButtonProps) {
+export function Button({ title, onPress, loading, disabled, variant = 'primary' }: ButtonProps) {
   const primary = variant === 'primary';
   return (
     <Pressable
       onPress={onPress}
-      disabled={loading}
-      style={({ pressed }) => [styles.base, primary ? styles.primary : styles.secondary, pressed && styles.pressed]}>
+      disabled={loading || disabled}
+      style={({ pressed }) => [
+        styles.base,
+        primary ? styles.primary : styles.secondary,
+        pressed && styles.pressed,
+        disabled && styles.disabled,
+      ]}>
       {loading ? (
         <ActivityIndicator color={primary ? colors.primaryText : colors.primary} />
       ) : (
@@ -29,5 +35,6 @@ const styles = StyleSheet.create({
   primary: { backgroundColor: colors.primary },
   secondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary },
   pressed: { opacity: 0.8 },
+  disabled: { opacity: 0.4 },
   label: { fontSize: 16, fontWeight: '600' },
 });
