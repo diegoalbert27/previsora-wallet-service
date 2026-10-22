@@ -9,7 +9,9 @@
       "supportsTablet": true
     },
     "android": {
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.previsorawallet.app",
+      "versionCode": 1
     },
     "plugins": [
       "expo-router",
@@ -22,6 +24,17 @@
     "scheme": "previsora",
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "edd7286a-ca63-426e-ab68-5c6bbe6dcd95"
+      }
+    },
+    "owner": "diogoven"
   }
 }
