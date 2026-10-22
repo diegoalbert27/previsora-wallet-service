@@ -1,16 +1,37 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
-import { colors } from '@/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { theme } from '@/theme';
+
+const BAR_HEIGHT = 68; // content height; the bottom safe-area inset is added on top
+const ICON_BOOST = 5; // the navigator's default icon size is a bit small for this bar
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
-    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: colors.primary }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        sceneStyle: { backgroundColor: theme.colors.bg.app },
+        tabBarActiveTintColor: theme.colors.text.primary,
+        tabBarInactiveTintColor: theme.colors.text.tertiary,
+        tabBarStyle: {
+          backgroundColor: theme.colors.bg.surface1,
+          borderTopColor: theme.colors.border.subtle,
+          borderTopWidth: 1,
+          height: BAR_HEIGHT + insets.bottom,
+          paddingTop: theme.space[2],
+          paddingBottom: Math.max(insets.bottom, theme.space[2]),
+        },
+        tabBarLabelStyle: { fontFamily: theme.typography.microButton.fontFamily, fontSize: 12, marginTop: 2 },
+      }}>
       <Tabs.Screen
         name="balances"
         options={{
           title: 'Balances',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'wallet' : 'wallet-outline'} size={size} color={color as string} />
+            <Ionicons name={focused ? 'wallet' : 'wallet-outline'} size={size + ICON_BOOST} color={color as string} />
           ),
         }}
       />
@@ -19,7 +40,7 @@ export default function TabsLayout() {
         options={{
           title: 'Envelopes',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'mail' : 'mail-outline'} size={size} color={color as string} />
+            <Ionicons name={focused ? 'mail' : 'mail-outline'} size={size + ICON_BOOST} color={color as string} />
           ),
         }}
       />
@@ -28,7 +49,7 @@ export default function TabsLayout() {
         options={{
           title: 'Connections',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'link' : 'link-outline'} size={size} color={color as string} />
+            <Ionicons name={focused ? 'link' : 'link-outline'} size={size + ICON_BOOST} color={color as string} />
           ),
         }}
       />

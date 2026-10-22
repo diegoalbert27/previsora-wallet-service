@@ -39,7 +39,7 @@ serve(async (req) => {
       insertPayload.encrypted_api_key = await encryptApiKey(api_key);
       insertPayload.encrypted_api_secret = await encryptApiKey(api_secret);
       
-    } else if (connection_type === 'ONCHAIN_WALLET' || connection_type === 'COLD_WALLET') {
+    } else if (connection_type === 'ONCHAIN_WALLET') {
       if (!public_address || !network) throw new Error('Missing Wallet details');
 
       const normalizedNetwork = normalize(network);

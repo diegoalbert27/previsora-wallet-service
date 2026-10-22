@@ -1,4 +1,4 @@
-export type ConnectionType = 'CEX' | 'ONCHAIN_WALLET' | 'COLD_WALLET';
+export type ConnectionType = 'CEX' | 'ONCHAIN_WALLET';
 
 export interface SupportedAsset {
   symbol: string;
@@ -24,6 +24,7 @@ export interface Balance {
   asset: string;
   amount: number;
   last_synced_at: string;
+  asset_icon_url: string | null;
 }
 
 export interface NewConnectionInput {
@@ -47,30 +48,58 @@ export interface SyncResult {
 export interface Envelope {
   id: string;
   name: string;
+  icon: string | null;
   target_amount: number | null;
   current_amount: number;
   asset: string;
   created_at: string;
 }
 
-/** A row of the `envelope_balances` view: the share of the user's total liquidity assigned to an envelope. */
 export interface EnvelopeBalance {
   envelope_id: string;
   name: string;
-  /** Sum of the envelope's active rule percentages (0–100). */
-  percentage: number;
-  /** Total balances × percentage / 100, in USD. */
+  icon: string | null;
   allocated_amount: number;
   created_at: string;
 }
 
-/** Share of the user's liquidity routed to an envelope. */
+export interface EnvelopeAllocation {
+  envelope_id: string;
+  source_connection_id: string;
+  asset: string;
+  connection_type: ConnectionType;
+  provider: string;
+  network: string | null;
+  public_address: string | null;
+  percentage: number;
+  allocated_amount: number;
+}
+
 export interface RuleInput {
   envelope_id: string;
   percentage: number;
+  source_connection_id: string;
+  source_asset: string;
+}
+
+export interface FundingSource {
+  connection_id: string;
+  connection_type: ConnectionType;
+  provider: string;
+  network: string | null;
+  public_address: string | null;
+  asset: string;
+  icon_url: string | null;
+  amount: number;
 }
 
 export interface NewEnvelopeInput {
   name: string;
   asset: string;
+  icon: string;
+}
+
+export interface EnvelopeUpdate {
+  name: string;
+  icon: string;
 }

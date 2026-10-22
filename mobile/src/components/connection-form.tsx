@@ -1,20 +1,23 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/button';
+import { Select } from '@/components/select';
 import { TextField } from '@/components/text-field';
+import { NETWORKS } from '@/lib/networks';
 import { useSync } from '@/hooks/use-sync';
 import { addConnection } from '@/services/connections';
 import { colors, radius, spacing } from '@/theme';
 import type { NewConnectionInput } from '@/types/database';
 
-type Kind = 'wallet' | 'binance';
+export type Kind = 'wallet' | 'binance';
 
-const NETWORKS = ['ETHEREUM', 'SEPOLIA'] as const;
 const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/;
 
 interface ConnectionFormProps {
   /** Called once the connection exists and the first sync has finished (or the user dismissed its errors). */
   onDone: () => void | Promise<void>;
+  /** Lets the screen react to the chosen kind (e.g. to show help that only applies to Binance). */
+  onKindChange?: (kind: Kind) => void;
 }
 
 function Segmented<T extends string>({ options, value, onChange }: { options: readonly T[]; value: T; onChange: (v: T) => void }) {
@@ -32,10 +35,15 @@ function Segmented<T extends string>({ options, value, onChange }: { options: re
   );
 }
 
-export function ConnectionForm({ onDone }: ConnectionFormProps) {
+export function ConnectionForm({ onDone, onKindChange }: ConnectionFormProps) {
   const { sync } = useSync();
   const [kind, setKind] = useState<Kind>('wallet');
-  const [network, setNetwork] = useState<(typeof NETWORKS)[number]>('SEPOLIA');
+
+  function changeKind(next: Kind) {
+    setKind(next);
+    onKindChange?.(next);
+  }
+  const [network, setNetwork] = useState('SEPOLIA');
   const [address, setAddress] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
@@ -96,12 +104,16 @@ export function ConnectionForm({ onDone }: ConnectionFormProps) {
 
   return (
     <View style={styles.form}>
-      <Segmented options={['wallet', 'binance'] as const} value={kind} onChange={setKind} />
+      <Segmented options={['wallet', 'binance'] as const} value={kind} onChange={changeKind} />
 
       {kind === 'wallet' ? (
         <>
-          <Text style={styles.label}>Network</Text>
-          <Segmented options={NETWORKS} value={network} onChange={setNetwork} />
+          <Select
+            label="Network"
+            value={network}
+            options={NETWORKS.map(({ value, label, description }) => ({ value, label, description }))}
+            onChange={setNetwork}
+          />
           <TextField label="Wallet address" placeholder="0x…" value={address} onChangeText={setAddress} />
         </>
       ) : (
@@ -121,7 +133,6 @@ export function ConnectionForm({ onDone }: ConnectionFormProps) {
 const styles = StyleSheet.create({
   form: { gap: spacing.md },
   heading: { fontSize: 18, fontWeight: '600', color: colors.text },
-  label: { fontSize: 14, fontWeight: '500', color: colors.text },
   hint: { fontSize: 13, color: colors.textMuted },
   errorBox: { color: colors.danger, fontSize: 14 },
   segmented: { flexDirection: 'row', backgroundColor: colors.border, borderRadius: radius.md, padding: 2 },

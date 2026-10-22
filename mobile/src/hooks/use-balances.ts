@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { listBalances } from '@/services/balances';
+import { getTotalAllocated } from '@/services/envelopes';
 import { useConnections } from '@/providers/connections-provider';
 import type { Balance, Connection } from '@/types/database';
 
@@ -12,6 +13,7 @@ export interface ConnectionShare {
 
 export interface AssetTotal {
   asset: string;
+  iconUrl: string | null;
   amount: number;
   byConnection: ConnectionShare[];
 }
@@ -26,12 +28,16 @@ export function connectionLabel(c: Connection | undefined): string {
 export function useBalances() {
   const { connections } = useConnections();
   const [balances, setBalances] = useState<Balance[]>([]);
+  // null when the envelope_balances view cannot be read; the balances themselves must still load.
+  const [totalAllocated, setTotalAllocated] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
-      setBalances(await listBalances());
+      const [rows, allocated] = await Promise.all([listBalances(), getTotalAllocated().catch(() => null)]);
+      setBalances(rows);
+      setTotalAllocated(allocated);
       setError(null);
     } catch (e) {
       setError((e as Error).message);
@@ -51,7 +57,7 @@ export function useBalances() {
     const assets = new Map<string, AssetTotal>();
 
     for (const b of balances) {
-      const entry = assets.get(b.asset) ?? { asset: b.asset, amount: 0, byConnection: [] };
+      const entry = assets.get(b.asset) ?? { asset: b.asset, iconUrl: b.asset_icon_url, amount: 0, byConnection: [] };
       entry.amount += b.amount;
       entry.byConnection.push({
         connectionId: b.connection_id,
@@ -74,5 +80,5 @@ export function useBalances() {
     return { assetTotals, total, lastSyncedAt };
   }, [balances, connections]);
 
-  return { ...summary, loading, error, refresh };
+  return { ...summary, totalAllocated, loading, error, refresh };
 }

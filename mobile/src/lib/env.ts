@@ -17,4 +17,8 @@ export const env = {
   supabaseUrl: httpsUrl('EXPO_PUBLIC_SUPABASE_URL', process.env.EXPO_PUBLIC_SUPABASE_URL),
   supabaseKey: required('EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY', process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
   functionsRegion: process.env.EXPO_PUBLIC_FUNCTIONS_REGION ?? 'eu-central-1',
+  // Public Storage bucket that holds the token icons referenced by supported_assets.image_url.
+  // Public Storage bucket with one logo per provider (BINANCE.svg, BLOCKCHAIN.svg, ...).
+  providerIconsBucket: process.env.EXPO_PUBLIC_PROVIDER_ICONS_BUCKET ?? 'providers',
+  assetImagesBucket: process.env.EXPO_PUBLIC_ASSET_IMAGES_BUCKET ?? 'asset-icons',
 };

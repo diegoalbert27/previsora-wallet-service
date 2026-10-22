@@ -3,7 +3,7 @@
 -- ==========================================
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE connection_type AS ENUM ('CEX', 'ONCHAIN_WALLET', 'COLD_WALLET');
+CREATE TYPE connection_type AS ENUM ('CEX', 'ONCHAIN_WALLET');
 CREATE TYPE rule_trigger AS ENUM ('ON_NEW_DEPOSIT', 'ON_BALANCE_THRESHOLD');
 
 -- ==========================================
@@ -13,6 +13,8 @@ CREATE TYPE rule_trigger AS ENUM ('ON_NEW_DEPOSIT', 'ON_BALANCE_THRESHOLD');
 -- Perfiles (Extendiendo auth.users)
 CREATE TABLE public.profiles (
     id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
     default_currency VARCHAR(10) DEFAULT 'USD',
     delete_status BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -71,6 +73,7 @@ CREATE TABLE public.envelopes (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     name VARCHAR(100) NOT NULL, 
+    icon VARCHAR(50), -- clave del icono elegido en la app (ej. 'piggy-bank'); NULL usa el icono por defecto
     target_amount DECIMAL(18, 8), 
     current_amount DECIMAL(18, 8) DEFAULT 0.00000000,
     asset VARCHAR(10) REFERENCES public.supported_assets(symbol) ON DELETE CASCADE NOT NULL,
@@ -86,10 +89,14 @@ CREATE TABLE public.rules (
     trigger_event rule_trigger NOT NULL,
     percentage_to_route DECIMAL(5, 2) NOT NULL, 
     target_envelope_id UUID REFERENCES public.envelopes(id) ON DELETE CASCADE NOT NULL,
+    -- Fuente de fondos: el porcentaje se calcula sobre el saldo de este activo en esta conexión
+    source_connection_id UUID REFERENCES public.connections(id) ON DELETE CASCADE NOT NULL,
+    source_asset TEXT NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(target_envelope_id, trigger_event) -- una regla por sobre y tipo de disparador (permite upsert)
+    -- Una regla por sobre, fuente y tipo de disparador (permite upsert)
+    UNIQUE(target_envelope_id, source_connection_id, source_asset, trigger_event)
 );
 
 -- Historial de Ejecución de Reglas

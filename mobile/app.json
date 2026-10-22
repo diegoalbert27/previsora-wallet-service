@@ -4,7 +4,7 @@
     "slug": "previsora-wallet-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true
     },
@@ -14,7 +14,10 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-font"
+      "expo-font",
+      "expo-status-bar",
+      "expo-image",
+      "expo-web-browser"
     ],
     "scheme": "previsora",
     "experiments": {
