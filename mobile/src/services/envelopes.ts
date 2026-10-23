@@ -29,7 +29,7 @@ export async function getEnvelopes(): Promise<EnvelopeBalance[]> {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  // NUMERIC columns may arrive as strings.
+
   return data.map((row) => ({
     ...row,
     allocated_amount: Number(row.allocated_amount),
@@ -68,7 +68,6 @@ export async function listSupportedAssets(): Promise<(Pick<SupportedAsset, 'symb
 
 /** Sum of what every envelope has allocated, from the `envelope_balances` view. */
 export async function getTotalAllocated(): Promise<number> {
-  // Summed here rather than with PostgREST's sum() aggregate, which is disabled by default.
   const { data, error } = await supabase.from('envelope_balances').select('allocated_amount');
 
   if (error) throw error;
@@ -80,7 +79,6 @@ export async function getEnvelopeAllocations(): Promise<EnvelopeAllocation[]> {
   const { data, error } = await supabase.from('envelope_allocations').select('*');
 
   if (error) throw error;
-  // NUMERIC columns may arrive as strings.
   return data
     .map((row) => ({ ...row, percentage: Number(row.percentage), allocated_amount: Number(row.allocated_amount) }))
     .sort((a, b) => b.allocated_amount - a.allocated_amount);
@@ -94,7 +92,6 @@ export async function updateEnvelope(id: string, update: EnvelopeUpdate): Promis
     .select('id');
 
   if (error) throw error;
-  // RLS filters rows silently instead of failing, so an empty result means nothing was updated.
   if (data.length === 0) throw new Error('Envelope not found.');
 }
 

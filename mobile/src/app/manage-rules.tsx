@@ -30,10 +30,8 @@ interface Row {
   icon: string | null;
 }
 
-// Percentages typed per envelope, grouped by funding source so each source keeps its own distribution.
 type Distribution = Record<string, Record<string, string>>;
 
-// Up to 3 integer digits and 2 decimals, matching DECIMAL(5, 2).
 const PERCENTAGE_INPUT = /^\d{0,3}([.,]\d{0,2})?$/;
 
 const sourceKey = (s: { connection_id: string; asset: string }) => `${s.connection_id}:${s.asset}`;
@@ -41,7 +39,6 @@ const toNumber = (text: string) => (text === '' || text === '.' || text === ',' 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 const formatAmount = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const ALL = 'ALL';
-// Filter category of a source: the exchange it lives in, or "WALLET" for any on-chain wallet.
 const categoryOf = (s: FundingSource) => (s.connection_type === 'CEX' ? s.provider : 'WALLET');
 const categoryLabel = (category: string) =>
   category === ALL ? 'All' : category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
@@ -82,7 +79,6 @@ export default function ManageRulesScreen() {
   }, []);
 
   const selected = useMemo(() => sources.find((s) => sourceKey(s) === selectedKey) ?? null, [sources, selectedKey]);
-  // Inputs and the "Unallocated" counter only look at the selected source.
   const values = useMemo(() => (selectedKey ? (distribution[selectedKey] ?? {}) : {}), [distribution, selectedKey]);
   const allocated = useMemo(() => round2(Object.values(values).reduce((sum, v) => sum + toNumber(v), 0)), [values]);
   const unallocated = round2(100 - allocated);
@@ -98,7 +94,6 @@ export default function ManageRulesScreen() {
     setSaving(true);
     setError(null);
     try {
-      // Only the rules of the selected source are written.
       await upsertRules(
         rows.map((r) => ({
           envelope_id: r.envelopeId,
@@ -116,7 +111,6 @@ export default function ManageRulesScreen() {
 
   const canEdit = !loading && selected !== null && rows.length > 0;
 
-  // Filter by where the money lives (all, wallets, or one exchange). Only shown when there is something to choose from.
   const categories = useMemo(() => [ALL, ...new Set(sources.map(categoryOf))], [sources]);
   const filteredSources = useMemo(
     () => (filter === ALL ? sources : sources.filter((source) => categoryOf(source) === filter)),
@@ -126,7 +120,6 @@ export default function ManageRulesScreen() {
 
   function applyFilter(next: string) {
     setFilter(next);
-    // Keep the selected source inside the filter; otherwise jump to the first one that matches.
     const visible = next === ALL ? sources : sources.filter((source) => categoryOf(source) === next);
     if (!visible.some((source) => sourceKey(source) === selectedKey) && visible[0]) {
       setSelectedKey(sourceKey(visible[0]));
@@ -159,8 +152,7 @@ export default function ManageRulesScreen() {
         </ScrollView>
       ) : null}
 
-      <KeyboardAvoidingView style={styles.body} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        {/* The funding source is the protagonist: a large card with its logo, name and balance, plus the unallocated share. */}
+      <KeyboardAvoidingView style={styles.body} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>        
         <Pressable
           disabled={!canPick}
           onPress={() => setPickerOpen(true)}

@@ -22,15 +22,12 @@ const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
 
 interface ConnectionRowProps {
   connection: Connection;
-  /** Sum of the connection's synced balances (stablecoins, so ≈ USD) and how many assets hold funds. */
   total: number | null;
   assetCount: number;
   deleting: boolean;
-  /** Called when the row is swiped open; `close` slides it back if the user changes their mind. */
   onRequestDelete: (connection: Connection, close: () => void) => void;
 }
 
-/** A connection card that reveals a red Delete action when swiped to the left. */
 function ConnectionRow({ connection, total, assetCount, deleting, onRequestDelete }: ConnectionRowProps) {
   const swipeable = useRef<SwipeableMethods>(null);
   const isExchange = connection.connection_type === 'CEX';
@@ -83,7 +80,6 @@ function ConnectionRow({ connection, total, assetCount, deleting, onRequestDelet
 export default function ConnectionsScreen() {
   const { connections, loading, refresh } = useConnections();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  // Decoration: if the balances cannot be read the cards still show, just without the amounts.
   const [balances, setBalances] = useState<Balance[] | null>(null);
 
   useFocusEffect(
@@ -105,7 +101,6 @@ export default function ConnectionsScreen() {
     return map;
   }, [balances]);
 
-  // Nothing to show before the first load; afterwards no connections means the first-use state.
   const isEmpty = !loading && connections.length === 0;
 
   function confirmDelete(connection: Connection, close: () => void) {
@@ -121,18 +116,16 @@ export default function ConnectionsScreen() {
             setDeletingId(connection.id);
             try {
               await deleteConnection(connection.id);
-              // Deleting the last connection sends the user back to onboarding via the navigation guard.
               await refresh();
             } catch (e) {
               Alert.alert('Error', (e as Error).message);
             } finally {
               setDeletingId(null);
-              close(); // if the delete failed the row stays; a deleted one is already gone
+              close();
             }
           },
         },
       ],
-      // Tapping outside the dialog (Android) also counts as "no".
       { cancelable: true, onDismiss: close },
     );
   }

@@ -30,11 +30,9 @@ interface EnvelopeRowProps {
   deleting: boolean;
   onToggle: () => void;
   onRequestEdit: (envelope: EnvelopeBalance) => void;
-  /** `close` slides the row back if the user changes their mind. */
   onRequestDelete: (envelope: EnvelopeBalance, close: () => void) => void;
 }
 
-/** Envelope card. Swipe right to edit (name and icon), swipe left to delete; tap to see where its money comes from. */
 function EnvelopeRow({ envelope, sources, assetIcons, open, deleting, onToggle, onRequestEdit, onRequestDelete }: EnvelopeRowProps) {
   const swipeable = useRef<SwipeableMethods>(null);
 
@@ -61,7 +59,6 @@ function EnvelopeRow({ envelope, sources, assetIcons, open, deleting, onToggle, 
         </View>
       )}
       onSwipeableOpen={(direction) => {
-        // The direction is the way the user swiped: right reveals the left panel (Edit), left reveals Delete.
         if (direction === SwipeDirection.RIGHT) {
           onRequestEdit(envelope);
           swipeable.current?.close();
@@ -122,7 +119,6 @@ export default function EnvelopesScreen() {
       const [envelopeRows, allocationRows, assetRows] = await Promise.all([
         getEnvelopes(),
         getEnvelopeAllocations(),
-        // Decoration only: if it fails the rows show the ticker instead of the logo.
         listSupportedAssets().catch(() => []),
       ]);
       setEnvelopes(envelopeRows);
@@ -173,21 +169,18 @@ export default function EnvelopesScreen() {
               Alert.alert('Error', (e as Error).message);
             } finally {
               setDeletingId(null);
-              close(); // if the delete failed the row stays; a deleted one is already gone
+              close();
             }
           },
         },
       ],
-      // Tapping outside the dialog (Android) also counts as "no".
       { cancelable: true, onDismiss: close },
     );
   }
 
-  // Same figure as the Allocated KPI on Balances: the sum over every envelope in the list.
   const totalAllocated = useMemo(() => envelopes.reduce((sum, e) => sum + e.allocated_amount, 0), [envelopes]);
 
   const totalParts = splitTotal(totalAllocated);
-  // Before the first load there is nothing to decide yet; afterwards no envelopes means the first-use state.
   const isEmpty = !loading && envelopes.length === 0;
 
   const sourcesByEnvelope = useMemo(() => {
@@ -261,7 +254,6 @@ export default function EnvelopesScreen() {
 
 const styles = StyleSheet.create({
   header: { gap: spacing.sm, marginBottom: spacing.sm },
-  // Same look as the total card on the Balances tab.
   totalCard: { backgroundColor: colors.primary, borderRadius: radius.md, padding: spacing.lg, gap: spacing.xs },
   totalLabel: { color: colors.primaryText, opacity: 0.85, fontSize: 14 },
   totalValue: { color: colors.primaryText, fontSize: 32, fontWeight: '700' },

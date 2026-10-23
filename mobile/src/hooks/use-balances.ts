@@ -28,7 +28,6 @@ export function connectionLabel(c: Connection | undefined): string {
 export function useBalances() {
   const { connections } = useConnections();
   const [balances, setBalances] = useState<Balance[]>([]);
-  // null when the envelope_balances view cannot be read; the balances themselves must still load.
   const [totalAllocated, setTotalAllocated] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +69,6 @@ export function useBalances() {
     const assetTotals = [...assets.values()].sort((a, b) => b.amount - a.amount);
     for (const a of assetTotals) a.byConnection.sort((x, y) => y.amount - x.amount);
 
-    // Every supported asset is a USD stablecoin, so the sum is an approximate USD value.
     const total = assetTotals.reduce((sum, a) => sum + a.amount, 0);
     const lastSyncedAt = balances.reduce<string | null>(
       (latest, b) => (latest === null || b.last_synced_at > latest ? b.last_synced_at : latest),

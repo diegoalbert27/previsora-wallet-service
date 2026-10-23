@@ -50,7 +50,6 @@ export default function ProfileScreen() {
   function confirmSignOut() {
     Alert.alert('Sign out', 'You will need to sign in again to see your balances.', [
       { text: 'Cancel', style: 'cancel' },
-      // The auth listener clears the session and the navigation guard sends the user back to the onboarding.
       { text: 'Sign out', style: 'destructive', onPress: () => supabase.auth.signOut() },
     ]);
   }

@@ -2,7 +2,6 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
 
-// Lets the in-app browser close itself when the redirect lands back in the app.
 WebBrowser.maybeCompleteAuthSession();
 
 function parseParams(raw: string): Record<string, string> {
@@ -50,7 +49,6 @@ export async function createSessionFromUrl(url: string): Promise<void> {
  * on success the auth listener in AuthProvider picks up the new session and navigation follows.
  */
 export async function signInWithGoogle(): Promise<void> {
-  // exp://<ip>/--/auth/callback in Expo Go, previsora://auth/callback in a build. Both must be allowed in Supabase.
   const redirectTo = Linking.createURL('auth/callback');
 
   const { data, error } = await supabase.auth.signInWithOAuth({

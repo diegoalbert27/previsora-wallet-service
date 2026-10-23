@@ -5,7 +5,6 @@ import type { Connection } from '@/types/database';
 
 interface ConnectionsContextValue {
   connections: Connection[];
-  /** True until the first load for the current session finishes. */
   loading: boolean;
   refresh: () => Promise<void>;
 }
@@ -19,7 +18,6 @@ const ConnectionsContext = createContext<ConnectionsContextValue>({
 export function ConnectionsProvider({ children }: { children: ReactNode }) {
   const { session } = useAuth();
   const userId = session?.user.id ?? null;
-  // Results are tagged with the user they belong to, so switching users never shows stale data.
   const [loaded, setLoaded] = useState<{ userId: string; items: Connection[] } | null>(null);
 
   const refresh = useCallback(async () => {
@@ -27,7 +25,6 @@ export function ConnectionsProvider({ children }: { children: ReactNode }) {
     try {
       setLoaded({ userId, items: await listConnections() });
     } catch (e) {
-      // Leave the loading state so the app does not hang; keep whatever was loaded before.
       setLoaded((prev) => prev ?? { userId, items: [] });
       throw e;
     }
@@ -38,7 +35,6 @@ export function ConnectionsProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     listConnections()
       .then((items) => !cancelled && setLoaded({ userId, items }))
-      // Resolve the loading state on failure so the app does not hang.
       .catch(() => !cancelled && setLoaded((prev) => prev ?? { userId, items: [] }));
     return () => {
       cancelled = true;

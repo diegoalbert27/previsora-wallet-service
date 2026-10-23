@@ -20,7 +20,6 @@ interface Slide {
   id: string;
   title: string;
   subtitle: string;
-  /** Placeholder shown inside the illustration area until real artwork (SVG, PNG or Lottie) replaces it. */
   Icon: ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
 }
 
@@ -51,7 +50,6 @@ export default function OnboardingScreen() {
   const [index, setIndex] = useState(0);
   const lastIndex = useRef(0);
 
-  // Keeps the dots in sync while swiping; the state only changes when the visible page does.
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const page = Math.round(event.nativeEvent.contentOffset.x / width);
     if (page !== lastIndex.current && page >= 0 && page < SLIDES.length) {

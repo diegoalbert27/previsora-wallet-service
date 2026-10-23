@@ -27,7 +27,6 @@ export default function SignInScreen() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  // Wrong email or password: both fields turn red, since we never say which one is wrong.
   const [credentialsInvalid, setCredentialsInvalid] = useState(false);
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
   const [lastNameError, setLastNameError] = useState<string | null>(null);
@@ -71,7 +70,6 @@ export default function SignInScreen() {
     const passwordProblem = password.length >= 6 ? null : 'Password must be at least 6 characters.';
     const first = firstName.trim();
     const last = lastName.trim();
-    // Names are only collected when creating an account.
     const nameProblem = (value: string) =>
       !signUp ? null : !value ? 'Required.' : value.length > MAX_NAME_LENGTH ? `At most ${MAX_NAME_LENGTH} characters.` : null;
     const firstNameProblem = nameProblem(first);
@@ -80,7 +78,6 @@ export default function SignInScreen() {
     setLastNameError(lastNameProblem);
     setEmailError(emailProblem);
     setPasswordError(passwordProblem);
-    // Only checked on sign-up, and only when the password itself is valid, to avoid stacking two errors.
     const confirmProblem = signUp && !passwordProblem && confirmPassword !== password ? 'Passwords do not match.' : null;
     setConfirmPasswordError(confirmProblem);
     const termsProblem = signUp && !acceptedTerms ? 'You must accept the Terms and Conditions to continue.' : null;
@@ -96,7 +93,6 @@ export default function SignInScreen() {
           ...credentials,
           options: {
             data: { first_name: first, last_name: last, terms_accepted_at: new Date().toISOString() },
-            // The confirmation link opens the app here; services/oauth.ts turns the URL into a session.
             emailRedirectTo: Linking.createURL('auth/callback'),
           },
         })
@@ -104,16 +100,13 @@ export default function SignInScreen() {
     setLoading(false);
 
     if (error) {
-      // One message for "no such email" and "wrong password", so the form cannot be used to find out which emails exist.
       const badCredentials = !signUp && (error.code === 'invalid_credentials' || /invalid login credentials/i.test(error.message));
       setCredentialsInvalid(badCredentials);
       setMessage({ text: badCredentials ? 'Incorrect email or password.' : error.message, isError: true });
       return;
     }
-    if (!signUp || data.session) return; // signed in: the auth listener takes it from here
+    if (!signUp || data.session) return;
 
-    // Deliberately no "email already registered" branch: an existing email gets the same screen as a new one, so
-    // the form cannot be used to find out which emails have an account.
     setPendingSignup({ email: trimmed, password });
     router.replace('/verify-email');
   }

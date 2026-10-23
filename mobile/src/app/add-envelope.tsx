@@ -13,7 +13,6 @@ import { colors, radius, spacing } from '@/theme';
 const MAX_NAME_LENGTH = 100;
 
 export default function AddEnvelopeScreen() {
-  // With an `id` the screen edits that envelope (name and icon); without one it creates a new envelope.
   const params = useLocalSearchParams<{ id?: string; name?: string; icon?: string }>();
   const editingId = params.id;
   const isEditing = !!editingId;
@@ -27,7 +26,6 @@ export default function AddEnvelopeScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // The currency is fixed when the envelope is created, so there is nothing to load while editing.
     if (isEditing) return;
     let cancelled = false;
     listSupportedAssets()
@@ -71,7 +69,7 @@ export default function AddEnvelopeScreen() {
         <EnvelopeIconPicker value={icon} onChange={setIcon} />
         <TextField
           label="Name"
-          autoFocus // the keyboard opens right away: the name is the one thing to type here
+          autoFocus
           placeholder="e.g. Emergency fund"
           autoCapitalize="sentences"
           maxLength={MAX_NAME_LENGTH}

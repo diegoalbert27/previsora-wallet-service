@@ -9,7 +9,7 @@ import { clearPendingSignup, getPendingSignup } from '@/lib/pending-signup';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/theme';
 
-const POLL_INTERVAL_MS = 15_000; // the Auth API rate-limits sign-in attempts, so do not poll faster than this
+const POLL_INTERVAL_MS = 15_000;
 const RESEND_COOLDOWN_S = 30;
 
 export default function VerifyEmailScreen() {
@@ -20,7 +20,6 @@ export default function VerifyEmailScreen() {
   const [resending, setResending] = useState(false);
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_S);
 
-  // Signing in only works once the email is confirmed, so a success means the user did it (on any device).
   const check = useCallback(async () => {
     if (!pending || checking.current) return;
     checking.current = true;
@@ -28,11 +27,9 @@ export default function VerifyEmailScreen() {
     checking.current = false;
 
     if (!signInError) {
-      clearPendingSignup(); // the auth listener has the session; navigation follows
+      clearPendingSignup();
       return;
     }
-    // "Invalid credentials" also counts as waiting: it is what an already-registered email returns, and showing it
-    // here would reveal that the account exists.
     const stillWaiting =
       signInError.code === 'email_not_confirmed' ||
       signInError.code === 'invalid_credentials' ||
@@ -42,7 +39,6 @@ export default function VerifyEmailScreen() {
 
   useEffect(() => {
     const interval = setInterval(check, POLL_INTERVAL_MS);
-    // Coming back from the mail app is the likeliest moment for the email to be confirmed: check right away.
     const subscription = AppState.addEventListener('change', (state) => state === 'active' && check());
     return () => {
       clearInterval(interval);

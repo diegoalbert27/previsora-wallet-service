@@ -25,14 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // The confirmation link in the sign-up email opens the app at auth/callback with the session in the URL.
   useEffect(() => {
     const handle = (url: string | null) => {
       if (!url?.includes('auth/callback')) return;
       supabase.auth
         .getSession()
         .then(({ data }) => (data.session ? undefined : createSessionFromUrl(url)))
-        .catch(() => {}); // a callback URL without a session (e.g. a cancelled flow) is not an error worth surfacing
+        .catch(() => {});
     };
 
     Linking.getInitialURL().then(handle).catch(() => {});

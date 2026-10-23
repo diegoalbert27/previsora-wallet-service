@@ -14,7 +14,6 @@ import { theme } from '@/theme';
 
 function RootNavigator() {
   const { session, loading } = useAuth();
-  // A font that fails to load must not block the app; text falls back to the system font.
   const [fontsLoaded, fontError] = useFonts({ InterTight_400Regular, InterTight_500Medium, InterTight_600SemiBold });
 
   if (loading || (!fontsLoaded && !fontError)) {

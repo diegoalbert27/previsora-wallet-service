@@ -28,7 +28,6 @@ export default function BalancesScreen() {
 
   const hasConnections = connections.length > 0;
   const needsConnection = !connectionsLoading && !hasConnections;
-  // The distribution is hidden when there is nothing to split or the envelopes view is unavailable.
   const allocated = totalAllocated !== null && total > 0 ? Math.min(totalAllocated, total) : null;
   const problems = [syncError, ...(lastResult?.errors.map((e) => e.error) ?? [])].filter(Boolean) as string[];
 

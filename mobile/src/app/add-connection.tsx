@@ -32,7 +32,6 @@ export default function AddConnectionScreen() {
 
 const styles = StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.xl },
-  // Room under the form so the floating help button never covers the submit button.
   contentWithHelp: { paddingBottom: 104 },
   title: { fontSize: 22, fontWeight: '700', color: colors.text },
 });
