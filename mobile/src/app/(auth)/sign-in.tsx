@@ -112,7 +112,7 @@ export default function SignInScreen() {
   }
 
   return (
-    <Screen>
+    <Screen scroll>
       <Text style={styles.title}>Previsora Wallet</Text>
       <Text style={styles.subtitle}>{signUp ? 'Create your account' : 'Welcome back'}</Text>
       {signUp ? (
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   dividerLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: colors.border },
   dividerLabel: { color: colors.textMuted, fontSize: 13 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.text, marginTop: spacing.xl },
+  title: { fontSize: 28, fontWeight: '700', color: colors.text, marginTop: spacing.md },
   subtitle: { fontSize: 16, color: colors.textMuted },
   error: { color: colors.danger, fontSize: 14, textAlign: 'center' },
   info: { color: colors.text, fontSize: 14, textAlign: 'center' },

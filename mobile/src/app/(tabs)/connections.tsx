@@ -50,7 +50,7 @@ function ConnectionRow({ connection, total, assetCount, deleting, onRequestDelet
       )}
       onSwipeableOpen={() => onRequestDelete(connection, () => swipeable.current?.close())}>
       <View style={[styles.card, deleting && styles.deleting]}>
-        <ProviderIcon connection={connection} size={52} />
+        <ProviderIcon connection={connection} size={44} />
         <View style={styles.info}>
           <View style={styles.titleRow}>
             <Text style={styles.title} numberOfLines={1}>
@@ -131,7 +131,7 @@ export default function ConnectionsScreen() {
   }
 
   return (
-    <Screen>
+    <Screen edges={['top']}>
       <ProfileHeader />
       {isEmpty ? (
         <View style={styles.emptyState}>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    padding: 20,
+    padding: 16,
     gap: spacing.md,
   },
   info: { flex: 1, gap: 4 },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   badgeLabel: { ...theme.typography.microBadge, color: theme.colors.status.warning },
   totals: { alignItems: 'flex-end', gap: 4 },
-  total: { ...theme.typography.bodyStrong, fontSize: 17, lineHeight: 22, color: colors.text },
+  total: { ...theme.typography.bodyStrong, fontSize: 16, lineHeight: 21, color: colors.text },
   title: { fontSize: 18, fontWeight: '600', color: colors.text, flexShrink: 1 },
   muted: { fontSize: 14, color: colors.textMuted },
   emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.lg, paddingBottom: spacing.xl },

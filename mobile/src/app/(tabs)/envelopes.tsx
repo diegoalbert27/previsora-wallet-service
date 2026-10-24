@@ -69,7 +69,7 @@ function EnvelopeRow({ envelope, sources, assetIcons, open, deleting, onToggle, 
       <Pressable style={[styles.card, deleting && styles.deleting]} onPress={onToggle}>
         <View style={styles.row}>
           <View style={styles.identity}>
-            <EnvelopeIcon name={envelope.icon} size={46} />
+            <EnvelopeIcon name={envelope.icon} size={40} />
             <Text style={styles.title} numberOfLines={1}>
               {envelope.name}
             </Text>
@@ -190,7 +190,7 @@ export default function EnvelopesScreen() {
   }, [allocations]);
 
   return (
-    <Screen>
+    <Screen edges={['top']}>
       <ProfileHeader />
       {isEmpty ? (
         <View style={styles.emptyState}>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   totalLabel: { color: colors.primaryText, opacity: 0.85, fontSize: 14 },
   totalValue: { color: colors.primaryText, fontSize: 32, fontWeight: '700' },
   totalFraction: { fontSize: 16, fontWeight: '500', opacity: 0.85 },
-  card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 20, gap: spacing.md },
+  card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 16, gap: spacing.md },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },
   deleting: { opacity: 0.5 },

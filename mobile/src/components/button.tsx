@@ -38,12 +38,12 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
 }
 
 const styles = StyleSheet.create({
-  base: { paddingVertical: spacing.md, borderRadius: radius.md, alignItems: 'center' },
+  base: { paddingVertical: 13, borderRadius: radius.md, alignItems: 'center' },
   primary: { backgroundColor: colors.primary },
   secondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary },
   light: { backgroundColor: LIGHT_BACKGROUND },
   pressed: { opacity: 0.8 },
   disabled: { opacity: 0.4 },
   content: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm + 4 },
-  label: { fontSize: 16, fontWeight: '600' },
+  label: { fontSize: 15, fontWeight: '600' },
 });

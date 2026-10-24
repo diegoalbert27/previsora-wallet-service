@@ -28,7 +28,7 @@ export function UserHeader({ onPress, ...name }: UserHeaderProps) {
         accessibilityRole="button"
         accessibilityLabel="Open profile"
         style={styles.row}>
-        <Avatar {...name} size={54} />
+        <Avatar {...name} size={46} />
         <View style={styles.text}>
           <Text style={styles.welcome}>Welcome back</Text>
           <Text style={styles.name} numberOfLines={1}>
@@ -45,5 +45,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
   text: { flex: 1 },
   welcome: { ...theme.typography.label, color: theme.colors.text.secondary },
-  name: { ...theme.typography.titleGreeting, fontSize: 24, lineHeight: 30, color: theme.colors.text.primary },
+  name: { ...theme.typography.titleGreeting, fontSize: 21, lineHeight: 27, color: theme.colors.text.primary },
 });

@@ -3,8 +3,8 @@ import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '@/theme';
 
-const BAR_HEIGHT = 68;
-const ICON_BOOST = 5;
+const BAR_HEIGHT = 60;
+const ICON_BOOST = 3;
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();

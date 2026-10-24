@@ -37,7 +37,7 @@ export function AssetRow({ symbol, iconUrl, amount, onPress, expanded = false, c
         android_ripple={{ color: theme.colors.border.subtle }}
         style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
         <View style={styles.row}>
-          <TokenAvatar symbol={symbol} iconUrl={iconUrl} size={46} />
+          <TokenAvatar symbol={symbol} iconUrl={iconUrl} size={40} />
           <Text style={styles.name}>{symbol}</Text>
           <Text style={styles.amount}>{formatAmount(amount)}</Text>
           {onPress ? <Chevron size={18} color={theme.colors.text.secondary} /> : null}
@@ -54,18 +54,18 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.lg,
     borderWidth: 1,
     borderColor: theme.colors.border.subtle,
-    paddingVertical: 18,
-    paddingHorizontal: theme.space[5],
+    paddingVertical: 14,
+    paddingHorizontal: theme.space[4],
     gap: theme.space[3],
     overflow: 'hidden',
   },
   pressed: { backgroundColor: theme.colors.bg.surface2 },
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.space[3] },
-  name: { ...theme.typography.bodyStrong, fontSize: 17, lineHeight: 22, flex: 1, color: theme.colors.text.primary },
+  name: { ...theme.typography.bodyStrong, fontSize: 16, lineHeight: 21, flex: 1, color: theme.colors.text.primary },
   amount: {
     ...theme.typography.bodyStrong,
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 21,
     color: theme.colors.text.primary,
     textAlign: 'right',
   },

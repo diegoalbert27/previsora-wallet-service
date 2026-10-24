@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -152,7 +151,7 @@ export default function ManageRulesScreen() {
         </ScrollView>
       ) : null}
 
-      <KeyboardAvoidingView style={styles.body} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>        
+      <KeyboardAvoidingView style={styles.body} behavior="padding">
         <Pressable
           disabled={!canPick}
           onPress={() => setPickerOpen(true)}

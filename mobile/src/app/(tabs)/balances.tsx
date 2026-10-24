@@ -32,7 +32,7 @@ export default function BalancesScreen() {
   const problems = [syncError, ...(lastResult?.errors.map((e) => e.error) ?? [])].filter(Boolean) as string[];
 
   return (
-    <Screen>
+    <Screen edges={['top']}>
       <ProfileHeader />
       {needsConnection ? (
         <View style={styles.emptyState}>
