@@ -27,6 +27,7 @@ interface Row {
   envelopeId: string;
   name: string;
   icon: string | null;
+  asset: string;
 }
 
 type Distribution = Record<string, Record<string, string>>;
@@ -65,7 +66,7 @@ export default function ManageRulesScreen() {
           const key = sourceKey({ connection_id: rule.source_connection_id, asset: rule.source_asset });
           (initial[key] ??= {})[rule.envelope_id] = rule.percentage ? String(rule.percentage) : '';
         }
-        setRows(envelopes.map((e) => ({ envelopeId: e.envelope_id, name: e.name, icon: e.icon })));
+        setRows(envelopes.map((e) => ({ envelopeId: e.envelope_id, name: e.name, icon: e.icon, asset: e.asset })));
         setSources(fundingSources);
         setDistribution(initial);
         setSelectedKey(fundingSources[0] ? sourceKey(fundingSources[0]) : null);
@@ -79,7 +80,11 @@ export default function ManageRulesScreen() {
 
   const selected = useMemo(() => sources.find((s) => sourceKey(s) === selectedKey) ?? null, [sources, selectedKey]);
   const values = useMemo(() => (selectedKey ? (distribution[selectedKey] ?? {}) : {}), [distribution, selectedKey]);
-  const allocated = useMemo(() => round2(Object.values(values).reduce((sum, v) => sum + toNumber(v), 0)), [values]);
+  const eligibleRows = useMemo(() => (selected ? rows.filter((r) => r.asset === selected.asset) : []), [rows, selected]);
+  const allocated = useMemo(
+    () => round2(eligibleRows.reduce((sum, r) => sum + toNumber(values[r.envelopeId] ?? ''), 0)),
+    [eligibleRows, values],
+  );
   const unallocated = round2(100 - allocated);
   const overAllocated = unallocated < 0;
 
@@ -94,7 +99,7 @@ export default function ManageRulesScreen() {
     setError(null);
     try {
       await upsertRules(
-        rows.map((r) => ({
+        eligibleRows.map((r) => ({
           envelope_id: r.envelopeId,
           percentage: toNumber(values[r.envelopeId] ?? ''),
           source_connection_id: selected.connection_id,
@@ -108,7 +113,7 @@ export default function ManageRulesScreen() {
     }
   }
 
-  const canEdit = !loading && selected !== null && rows.length > 0;
+  const canEdit = !loading && selected !== null && eligibleRows.length > 0;
 
   const categories = useMemo(() => [ALL, ...new Set(sources.map(categoryOf))], [sources]);
   const filteredSources = useMemo(
@@ -195,15 +200,19 @@ export default function ManageRulesScreen() {
 
         <Text style={styles.sectionTitle}>Assign a percentage to each envelope</Text>
         <FlatList
-          data={selected ? rows : []}
+          data={eligibleRows}
           keyExtractor={(item) => item.envelopeId}
-          extraData={[selectedKey, focusedId]}
+          extraData={[selectedKey, focusedId, eligibleRows]}
           contentContainerStyle={styles.list}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             loading || !selected ? undefined : (
-              <Text style={styles.muted}>Create an envelope first, then come back to allocate your money.</Text>
+              <Text style={styles.muted}>
+                {rows.length === 0
+                  ? 'Create an envelope first, then come back to allocate your money.'
+                  : `No ${selected.asset} envelopes yet. Create one with ${selected.asset} as its currency, or edit an existing envelope to change it.`}
+              </Text>
             )
           }
           renderItem={({ item }) => {

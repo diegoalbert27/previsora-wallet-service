@@ -59,6 +59,7 @@ export interface EnvelopeBalance {
   envelope_id: string;
   name: string;
   icon: string | null;
+  asset: string;
   allocated_amount: number;
   created_at: string;
 }
@@ -102,4 +103,5 @@ export interface NewEnvelopeInput {
 export interface EnvelopeUpdate {
   name: string;
   icon: string;
+  asset: string;
 }

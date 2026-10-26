@@ -12,7 +12,6 @@ import type {
 
 const COLUMNS = 'id, name, icon, target_amount, current_amount, asset, created_at';
 
-// DECIMAL columns may arrive as strings.
 function toEnvelope(row: any): Envelope {
   return {
     ...row,
@@ -21,17 +20,20 @@ function toEnvelope(row: any): Envelope {
   };
 }
 
-/** Reads the `envelope_balances` view (scripts/database/views.sql), which runs with the caller's RLS. */
 export async function getEnvelopes(): Promise<EnvelopeBalance[]> {
-  const { data, error } = await supabase
-    .from('envelope_balances')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const [{ data, error }, { data: assets, error: assetsError }] = await Promise.all([
+    supabase.from('envelope_balances').select('*').order('created_at', { ascending: false }),
+    // The view does not carry the currency; read it from the table so no view migration is needed.
+    supabase.from('envelopes').select('id, asset'),
+  ]);
 
   if (error) throw error;
+  if (assetsError) throw assetsError;
 
+  const assetById = new Map(assets.map((row) => [row.id, row.asset as string]));
   return data.map((row) => ({
     ...row,
+    asset: assetById.get(row.envelope_id) ?? '',
     allocated_amount: Number(row.allocated_amount),
   }));
 }
@@ -66,7 +68,6 @@ export async function listSupportedAssets(): Promise<(Pick<SupportedAsset, 'symb
   return data.map(({ image_url, ...asset }) => ({ ...asset, icon_url: resolveAssetImageUrl(image_url) }));
 }
 
-/** Sum of what every envelope has allocated, from the `envelope_balances` view. */
 export async function getTotalAllocated(): Promise<number> {
   const { data, error } = await supabase.from('envelope_balances').select('allocated_amount');
 
@@ -74,7 +75,6 @@ export async function getTotalAllocated(): Promise<number> {
   return data.reduce((sum, row) => sum + Number(row.allocated_amount), 0);
 }
 
-/** Breakdown of each envelope's balance by funding source, from the `envelope_allocations` view. */
 export async function getEnvelopeAllocations(): Promise<EnvelopeAllocation[]> {
   const { data, error } = await supabase.from('envelope_allocations').select('*');
 
@@ -84,15 +84,30 @@ export async function getEnvelopeAllocations(): Promise<EnvelopeAllocation[]> {
     .sort((a, b) => b.allocated_amount - a.allocated_amount);
 }
 
+export async function getEnvelopeAsset(id: string): Promise<string | null> {
+  const { data, error } = await supabase.from('envelopes').select('asset').eq('id', id).maybeSingle();
+
+  if (error) throw error;
+  return data?.asset ?? null;
+}
+
 export async function updateEnvelope(id: string, update: EnvelopeUpdate): Promise<void> {
   const { data, error } = await supabase
     .from('envelopes')
-    .update({ name: update.name.trim(), icon: update.icon, updated_at: new Date().toISOString() })
+    .update({ name: update.name.trim(), icon: update.icon, asset: update.asset, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select('id');
 
   if (error) throw error;
   if (data.length === 0) throw new Error('Envelope not found.');
+
+  const { error: rulesError } = await supabase
+    .from('rules')
+    .delete()
+    .eq('target_envelope_id', id)
+    .neq('source_asset', update.asset);
+
+  if (rulesError) throw rulesError;
 }
 
 /**
