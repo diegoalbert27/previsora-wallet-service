@@ -70,9 +70,12 @@ function EnvelopeRow({ envelope, sources, assetIcons, open, deleting, onToggle, 
         <View style={styles.row}>
           <View style={styles.identity}>
             <EnvelopeIcon name={envelope.icon} size={40} />
-            <Text style={styles.title} numberOfLines={1}>
-              {envelope.name}
-            </Text>
+            <View style={styles.nameBlock}>
+              <Text style={styles.title} numberOfLines={1}>
+                {envelope.name}
+              </Text>
+              <Text style={styles.muted}>{envelope.asset}</Text>
+            </View>
           </View>
           <View style={styles.amountGroup}>
             <Text style={styles.title}>{formatUsd(envelope.allocated_amount)}</Text>
@@ -261,6 +264,7 @@ const styles = StyleSheet.create({
   card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: 16, gap: spacing.md },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },
+  nameBlock: { flexShrink: 1 },
   deleting: { opacity: 0.5 },
   hint: { color: colors.textMuted, fontSize: 13, textAlign: 'center', marginTop: spacing.md },
   actionSlot: { width: 104 },
